@@ -3,7 +3,13 @@
     <nav-bar class="home-nav">
       <div slot="center">购物街</div>
     </nav-bar>
-    <scroll class="content" ref="scroll">
+    <scroll
+     class="content"
+     ref="scroll"
+     :probe-type="3"
+     @scroll="contentScroll"
+     :pull-up-load="true"
+     @pullingUp="loadMore">
       <home-swiper :banners="banners"></home-swiper>
       <recommend-view :recommends="recommends"></recommend-view>
       <feature-view />
@@ -14,7 +20,7 @@
       <goods-list :goods="showGoods"></goods-list>
 
     </scroll>
-    <back-top @click.native="backClick"></back-top>
+    <back-top @click.native="backClick" v-show="isShowBackTop"></back-top>
 
   </div>
 </template>
@@ -44,12 +50,13 @@
                 'new':{page:0,list:[]},
                 'sell':{page:0,list:[]}
             },
-            currentType:'pop'
+            currentType:'pop',//初始类型
+            isShowBackTop:false,
         }
       },
       computed:{
         showGoods(){
-          return this.goods[this.currentType].list
+          return this.goods[this.currentType].list//点谁，显示谁的数据，初始为pop
         }
       },
       components:{
@@ -96,16 +103,28 @@
             // console.log("回到顶部")
             this.$refs.scroll.scrollTo(0,0,500)
           },
+         //子组件传来监听到的具体位置
+          contentScroll(position){
+            // console.log(position)
+            this.isShowBackTop = (-position.y) > 1000
+          },
+          //上拉加载更多事件
+          loadMore(){
+            // console.log('上拉加载更多')
+            this.getHomeGoods(this.currentType)//再次请求数据
+          },
           /*
           * 网络请求相关方法
           *
           * */
+          //请求轮播图及推荐数据
           getHomeMultiData() {
               getHomeMultiData().then(res => {
                   this.banners = res.data.banner.list,
                       this.recommends = res.data.recommend.list
               })
           },
+          //请求商品数据
           getHomeGoods(type) {
               const page = this.goods[type].page + 1
               getHomeGoods(type,page).then(res =>{
@@ -113,6 +132,9 @@
                   //把数据存到本地，并改变页数
                   this.goods[type].list.push(...res.data.list)
                   this.goods[type].page += 1
+                  
+                  //请求完成后，上拉完成，使下次上拉请求数据正确执行
+                  this.$refs.scroll.finishPullUp()
               })
           },
       }
