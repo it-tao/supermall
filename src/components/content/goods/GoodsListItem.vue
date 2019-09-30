@@ -1,5 +1,5 @@
 <template>
-  <div class="goods-item">
+  <div class="goods-item" @click="itemClick">
     <img :src="goodsItem.show.img" alt="" @load="imageLoad">
     <div class="goods-info">
       <p>{{goodsItem.title}}</p>
@@ -21,10 +21,19 @@
             }
         },
         methods:{
+          //图片加载完成
           imageLoad(){
             // console.log('imageLoad')
             //利用事件总线，发射一个事件
             this.$bus.$emit('itemImageLoad')
+          },
+          //点击进入详情页
+          itemClick(){
+              // console.log('dianji')
+              // console.log(this.$router)
+              // console.log(this.$route)
+              this.$router.push('/detail/' + this.goodsItem.iid)
+
           }
         }
     }

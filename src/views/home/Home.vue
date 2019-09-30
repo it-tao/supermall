@@ -59,7 +59,8 @@
             currentType:'pop',//初始类型
             isShowBackTop:false,
             tabOffsetTop:0,
-            isTabFixed:false
+            isTabFixed:false,
+            saveY:0
         }
       },
       computed:{
@@ -98,6 +99,17 @@
           //调用接收到的返回值--一个写了定时器的匿名函数
           refresh()
         })
+      },
+      destroyed() {
+        console.log('xiaohuile')
+      },
+      activated() {
+        this.$refs.scroll.scrollTo(0,this.saveY,0)
+        //路由回来之后最好做一次刷新，防止出错
+        this.$refs.scroll.refresh()
+      },
+      deactivated() {
+        this.saveY = this.$refs.scroll.getScrollY()
       },
       methods: {
         /*

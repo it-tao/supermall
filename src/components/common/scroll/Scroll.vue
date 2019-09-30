@@ -42,6 +42,10 @@
         // console.log('防抖动')
         //确保better-scroll已经初始化完成，再去调它的方法
         this.scroll && this.scroll.refresh()
+      },
+      //返回scroll得y值
+      getScrollY(){
+        return this.scroll ? this.scroll.y : 0
       }
     },
     mounted(){
