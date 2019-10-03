@@ -43,10 +43,12 @@
 
 
   import {getHomeMultiData,getHomeGoods} from "network/home";
-  import {debounce} from "common/utils"
+  import {debounce} from "common/utils";
+  import {itemListenerMixin} from "common/mixin"
 
   export default {
     name: "Home",
+     mixins:[itemListenerMixin],
       data(){
         return {
            banners:[],
@@ -60,7 +62,8 @@
             isShowBackTop:false,
             tabOffsetTop:0,
             isTabFixed:false,
-            saveY:0
+            saveY:0,
+            itemImgListener:null
         }
       },
       computed:{
@@ -90,15 +93,17 @@
 
       },
       mounted() {
-        //当你对dom有所操作时，必须在mounted里做
+        //这部分代码和detail.vue重复了，所以用了混入mixin
+        /* //当你对dom有所操作时，必须在mounted里做
         //执行防抖函数，并接收返回值
         const refresh = debounce(this.$refs.scroll.refresh,500)
         //监听事件总线上的事件,
-        this.$bus.$on('itemImageLoad',()=>{
+        this.itemImgListener = ()=>{
           // console.log('监听到了')
           //调用接收到的返回值--一个写了定时器的匿名函数
           refresh()
-        })
+        }
+        this.$bus.$on('itemImageLoad',this.itemImgListener) */
       },
       destroyed() {
         console.log('xiaohuile')
@@ -109,7 +114,10 @@
         this.$refs.scroll.refresh()
       },
       deactivated() {
+        //路由离开时保存Y值
         this.saveY = this.$refs.scroll.getScrollY()
+        //离开时取消事件总线对于图片刷新完成的监听
+        this.$bus.$off('itemImageLoad',this.itemImgListener)
       },
       methods: {
         /*

@@ -1,6 +1,6 @@
 <template>
   <div class="goods-item" @click="itemClick">
-    <img :src="goodsItem.show.img" alt="" @load="imageLoad">
+    <img :src="showImage" alt="" @load="imageLoad">
     <div class="goods-info">
       <p>{{goodsItem.title}}</p>
       <span class="price">{{goodsItem.price}}</span>
@@ -20,6 +20,12 @@
                 }
             }
         },
+		computed:{
+      //计算属性，因为不同的接口传来的数据结构可能不一样
+			showImage(){
+				return this.goodsItem.image || this.goodsItem.show.img
+			}
+		},
         methods:{
           //图片加载完成
           imageLoad(){

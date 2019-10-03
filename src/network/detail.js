@@ -1,11 +1,18 @@
 import {request} from './request';
 //封装网络请求
+//请求详情页数据
 export function getDetail(iid){
   return request({
     url:'/detail',
     params:{
       iid
     }
+  })
+}
+//请求详情页商品推荐数据
+export function getRecommend(){
+  return request({
+    url:'/recommend'
   })
 }
 //商品详细信息类，用来保存拿来的杂乱的商品信息数据
@@ -19,6 +26,15 @@ export class Goods {
 		this.columns = columns
 		this.services = services
 		this.realPrice = itemInfo.lowNowPrice
+	}
+}
+//商品参数信息的类
+export class GoodsParam {
+	constructor(info, rule) {
+		// 注: images可能没有值(某些商品有值, 某些没有值)
+		this.image = info.images ? info.images[0] : '';
+		this.infos = info.set;
+		this.sizes = rule.tables;
 	}
 }
 //店铺详细信息类，用来保存拿来的店铺信息数据
